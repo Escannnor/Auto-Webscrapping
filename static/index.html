@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Scraper Interface</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        input[type="text"], input[type="number"], button {
+            margin: 10px 0;
+            padding: 5px;
+        }
+        #results {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Web Scraper Interface</h1>
+    
+    <h2>Scrape New Page</h2>
+    <input type="text" id="scrapeUrl" placeholder="Enter URL to scrape">
+    <button onclick="scrapePage()">Scrape</button>
+
+    <h2>Get Pages</h2>
+    <input type="number" id="skip" placeholder="Skip" value="0">
+    <input type="number" id="limit" placeholder="Limit" value="10">
+    <button onclick="getPages()">Get Pages</button>
+
+    <h2>Get Specific Page</h2>
+    <input type="number" id="pageId" placeholder="Enter Page ID">
+    <button onclick="getPage()">Get Page</button>
+
+    <div id="results"></div>
+
+    <script>
+        async function scrapePage() {
+            const url = document.getElementById('scrapeUrl').value;
+            const response = await fetch('/scrape/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ url: url }),
+            });
+            const data = await response.json();
+            displayResults(data);
+        }
+
+        async function getPages() {
+            const skip = document.getElementById('skip').value;
+            const limit = document.getElementById('limit').value;
+            const response = await fetch(`/pages/?skip=${skip}&limit=${limit}`);
+            const data = await response.json();
+            displayResults(data);
+        }
+
+        async function getPage() {
+            const pageId = document.getElementById('pageId').value;
+            const response = await fetch(`/pages/${pageId}`);
+            const data = await response.json();
+            displayResults(data);
+        }
+
+        function displayResults(data) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<h3>Results:</h3>';
+            resultsDiv.innerHTML += `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+        }
+    </script>
+</body>
+</html>
